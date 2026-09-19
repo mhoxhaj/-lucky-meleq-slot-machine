@@ -3,9 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>LUCKY Meleq — Free Coin Slots</title>
+
+  <title>Lucky Meleq</title>
+
   <style>
-    * { box-sizing: border-box; }
+    * {
+      box-sizing: border-box;
+    }
 
     body {
       margin: 0;
@@ -123,8 +127,14 @@
       box-shadow: 0 4px 0 #9b6500;
     }
 
-    .spin:hover { background: #ffd055; }
-    .spin:active { transform: translateY(3px); box-shadow: 0 1px 0 #9b6500; }
+    .spin:hover {
+      background: #ffd055;
+    }
+
+    .spin:active {
+      transform: translateY(3px);
+      box-shadow: 0 1px 0 #9b6500;
+    }
 
     .small-button {
       background: #7b4c9e;
@@ -133,7 +143,9 @@
       padding: 11px 12px;
     }
 
-    .small-button:hover { background: #9666bc; }
+    .small-button:hover {
+      background: #9666bc;
+    }
 
     .rules {
       margin-top: 24px;
@@ -188,19 +200,69 @@
       margin: 20px 0 0;
     }
 
+    .result-message {
+      text-align: center;
+      padding: 14px;
+      margin: 0 0 18px;
+      border-radius: 10px;
+      font-weight: bold;
+      font-size: 16px;
+    }
+
+    .result-win {
+      background: #2d7a3d;
+      color: white;
+      border: 1px solid #8bea91;
+      animation: winGlow 0.8s ease-in-out infinite alternate;
+    }
+
+    .result-loss {
+      background: #4b1e36;
+      color: white;
+      border: 1px solid #a46a89;
+    }
+
+    .winner-reels {
+      animation: winGlow 0.8s ease-in-out infinite alternate;
+    }
+
+    @keyframes winGlow {
+      from {
+        box-shadow: 0 0 12px rgba(255, 211, 78, 0.35);
+      }
+
+      to {
+        box-shadow: 0 0 28px rgba(255, 211, 78, 0.95);
+      }
+    }
+
     @media (max-width: 520px) {
-      .content { padding: 18px; }
-      .reel { min-height: 100px; font-size: 45px; }
-      header h1 { font-size: 26px; }
-      .history-item { flex-direction: column; gap: 4px; }
+      .content {
+        padding: 18px;
+      }
+
+      .reel {
+        min-height: 100px;
+        font-size: 45px;
+      }
+
+      header h1 {
+        font-size: 26px;
+      }
+
+      .history-item {
+        flex-direction: column;
+        gap: 4px;
+      }
     }
   </style>
 </head>
+
 <body>
   <main class="game">
     <header>
-      <h1>Lucky Meleq</h1>
-      <p>Slot Machine</p>
+      <h1>LUCKY MELEQ</h1>
+      <p>Free virtual coins only — no real money</p>
     </header>
 
     <section class="content">
@@ -216,10 +278,14 @@
         </form>
       </div>
 
-      <div class="reels">
-        <div class="reel">🍒</div>
-        <div class="reel">⭐</div>
-        <div class="reel">💎</div>
+      <div class="reels {% if last_was_win %}winner-reels{% endif %}">
+        <div class="reel">{{ last_reels[0] }}</div>
+        <div class="reel">{{ last_reels[1] }}</div>
+        <div class="reel">{{ last_reels[2] }}</div>
+      </div>
+
+      <div class="result-message {% if last_was_win %}result-win{% else %}result-loss{% endif %}">
+        {{ last_message }}
       </div>
 
       <form action="/spin" method="POST">
@@ -230,11 +296,14 @@
 
       <div class="rules">
         <h2>How it works</h2>
-        <p>Each spin costs {{ spin_cost }} virtual coins.</p>
-        <p>Match 2 symbols to win coins. Match 3 symbols for a jackpot.</p>
-        <p>Your account begins with {{ starting_coins }} free coins.</p>
+        <p>Each spin costs {{ spin_cost }} free virtual coins.</p>
+        <p>The game follows a scheduled free-coin demo sequence.</p>
+        <p>Virtual coins have no cash value and cannot be withdrawn, exchanged, or purchased.</p>
+
         <form action="/reset" method="POST" style="margin-top: 12px;">
-          <button class="small-button" type="submit">Reset free coins</button>
+          <button class="small-button" type="submit">
+            Reset free coins
+          </button>
         </form>
       </div>
 
@@ -256,9 +325,63 @@
       </div>
 
       <p class="warning">
-        This is a free slot machine.
+        Free entertainment. 
       </p>
     </section>
   </main>
+
+  <script>
+    const didWin = {{ "true" if last_was_win else "false" }};
+
+    function playWinSound() {
+      const AudioContextClass =
+        window.AudioContext || window.webkitAudioContext;
+
+      if (!AudioContextClass) {
+        return;
+      }
+
+      const audioContext = new AudioContextClass();
+
+      const notes = [
+        { frequency: 523.25, start: 0.00 },
+        { frequency: 659.25, start: 0.12 },
+        { frequency: 783.99, start: 0.24 }
+      ];
+
+      notes.forEach((note) => {
+        const oscillator = audioContext.createOscillator();
+        const gain = audioContext.createGain();
+
+        oscillator.type = "sine";
+        oscillator.frequency.value = note.frequency;
+
+        gain.gain.setValueAtTime(
+          0.0001,
+          audioContext.currentTime + note.start
+        );
+
+        gain.gain.exponentialRampToValueAtTime(
+          0.16,
+          audioContext.currentTime + note.start + 0.02
+        );
+
+        gain.gain.exponentialRampToValueAtTime(
+          0.0001,
+          audioContext.currentTime + note.start + 0.32
+        );
+
+        oscillator.connect(gain);
+        gain.connect(audioContext.destination);
+
+        oscillator.start(audioContext.currentTime + note.start);
+        oscillator.stop(audioContext.currentTime + note.start + 0.34);
+      });
+    }
+
+    if (didWin) {
+      playWinSound();
+    }
+  </script>
 </body>
 </html>
