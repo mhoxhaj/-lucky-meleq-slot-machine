@@ -300,9 +300,270 @@
         <p>The game follows a scheduled free-coin demo sequence.</p>
         <p>Virtual coins have no cash value and cannot be withdrawn, exchanged, or purchased.</p>
 
+      <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Lucky Meleq</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Arial, sans-serif;
+      background: radial-gradient(circle at top, #3b145f, #12051e 60%, #08020e);
+      color: white;
+      display: grid;
+      place-items: center;
+      padding: 20px;
+    }
+
+    .game {
+      width: min(700px, 100%);
+      background: #241039;
+      border: 5px solid #e4af2f;
+      border-radius: 22px;
+      box-shadow: 0 0 35px rgba(255, 197, 58, 0.45);
+      overflow: hidden;
+    }
+
+    header {
+      background: #e4af2f;
+      color: #250c3e;
+      padding: 20px;
+      text-align: center;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 32px;
+    }
+
+    .content {
+      padding: 28px;
+    }
+
+    .top-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 24px;
+    }
+
+    .balance {
+      background: #150821;
+      border: 1px solid #78499b;
+      border-radius: 12px;
+      padding: 14px 18px;
+      font-size: 18px;
+    }
+
+    .balance strong {
+      color: #ffd34e;
+      font-size: 24px;
+    }
+
+    .name-form {
+      display: flex;
+      gap: 8px;
+    }
+
+    input {
+      width: 145px;
+      padding: 11px;
+      border-radius: 8px;
+      border: 1px solid #b28ac9;
+      font-size: 15px;
+    }
+
+    .reels {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      background: #11061d;
+      border: 4px solid #bd8a1d;
+      border-radius: 16px;
+      padding: 18px;
+      margin: 22px 0;
+    }
+
+    .reel {
+      min-height: 135px;
+      display: grid;
+      place-items: center;
+      background: #fffaf0;
+      border-radius: 10px;
+      color: #111;
+      font-size: 65px;
+      box-shadow: inset 0 0 14px #888;
+    }
+
+    button {
+      border: none;
+      border-radius: 9px;
+      padding: 12px 16px;
+      font-weight: bold;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    .spin {
+      width: 100%;
+      padding: 17px;
+      background: #f4b51f;
+      color: #250c3e;
+      font-size: 21px;
+      box-shadow: 0 4px 0 #9b6500;
+    }
+
+    .spin:hover {
+      background: #ffd055;
+    }
+
+    .spin:active {
+      transform: translateY(3px);
+      box-shadow: 0 1px 0 #9b6500;
+    }
+
+    .small-button {
+      background: #7b4c9e;
+      color: white;
+      font-size: 14px;
+      padding: 11px 12px;
+    }
+
+    .small-button:hover {
+      background: #9666bc;
+    }
+
+    .rules {
+      margin-top: 24px;
+      background: #180a27;
+      border-radius: 12px;
+      padding: 16px;
+      color: #e9dfee;
+    }
+
+    .rules h2 {
+      margin: 0 0 8px;
+      font-size: 18px;
+      color: #ffd34e;
+    }
+
+    .rules p {
+      margin: 6px 0;
+    }
+
+    .history {
+      margin-top: 20px;
+    }
+
+    .history h2 {
+      color: #ffd34e;
+      font-size: 18px;
+    }
+
+    .history-item {
+      background: #160823;
+      border-bottom: 1px solid #49305c;
+      padding: 11px;
+      display: flex;
+      justify-content: space-between;
+      gap: 14px;
+      font-size: 14px;
+    }
+
+    .history-item:first-of-type {
+      border-radius: 10px 10px 0 0;
+    }
+
+    .history-item:last-child {
+      border-radius: 0 0 10px 10px;
+      border-bottom: none;
+    }
+
+    .winner-reels {
+      animation: winGlow 0.8s ease-in-out infinite alternate;
+    }
+
+    @keyframes winGlow {
+      from {
+        box-shadow: 0 0 12px rgba(255, 211, 78, 0.35);
+      }
+
+      to {
+        box-shadow: 0 0 28px rgba(255, 211, 78, 0.95);
+      }
+    }
+
+    @media (max-width: 520px) {
+      .content {
+        padding: 18px;
+      }
+
+      .reel {
+        min-height: 100px;
+        font-size: 45px;
+      }
+
+      header h1 {
+        font-size: 26px;
+      }
+
+      .history-item {
+        flex-direction: column;
+        gap: 4px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <main class="game">
+    <header>
+      <h1>LUCKY MELEQ</h1>
+    </header>
+
+    <section class="content">
+      <div class="top-row">
+        <div class="balance">
+          Player: <strong>{{ username }}</strong><br>
+          Coins: <strong>{{ coins }}</strong>
+        </div>
+
+        <form class="name-form" action="/set_username" method="POST">
+          <input name="username" maxlength="20" placeholder="Your name">
+          <button class="small-button" type="submit">Save name</button>
+        </form>
+      </div>
+
+      <div class="reels {% if last_was_win %}winner-reels{% endif %}">
+        <div class="reel">{{ last_reels[0] }}</div>
+        <div class="reel">{{ last_reels[1] }}</div>
+        <div class="reel">{{ last_reels[2] }}</div>
+      </div>
+
+      <form action="/spin" method="POST">
+        <button class="spin" type="submit">
+          SPIN — {{ spin_cost }} COINS
+        </button>
+      </form>
+
+      <div class="rules">
+        <h2>How it works</h2>
+        <p>Each spin costs {{ spin_cost }} coins.</p>
+
         <form action="/reset" method="POST" style="margin-top: 12px;">
           <button class="small-button" type="submit">
-            Reset free coins
+            Reset coins
           </button>
         </form>
       </div>
@@ -313,7 +574,7 @@
         {% if history %}
           {% for reels, message, balance in history|reverse %}
             <div class="history-item">
-              <span><strong>{{ reels }}</strong> — {{ message }}</span>
+              <span><strong>{{ reels }}</strong></span>
               <span>Balance: {{ balance }}</span>
             </div>
           {% endfor %}
@@ -323,10 +584,6 @@
           </div>
         {% endif %}
       </div>
-
-      <p class="warning">
-        Free entertainment. 
-      </p>
     </section>
   </main>
 
